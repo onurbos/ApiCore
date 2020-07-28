@@ -1,11 +1,12 @@
 ﻿
-using Api_Project.Context;
+using ApiCore.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
 using System.Reflection;
+using ApiCore.Helpers;
 
 namespace ApiCore
 {
@@ -14,11 +15,12 @@ namespace ApiCore
         public static void DIRegister(IServiceCollection services, IConfiguration configuration)
         {
             services.AddDbContext<AppDBContext>(options => options.UseNpgsql(configuration.GetConnectionString("DBConnection")));
+            services.AddDbContext<AuthDBContext>(options => options.UseNpgsql(configuration.GetConnectionString("AuthDBConnection")));
 
             services.AddScoped(p => new AppDBContext(p.GetService<DbContextOptions<AppDBContext>>(), configuration));
-
+        
             //Register all repositories
-            foreach (var assembly in new[] { "Api Project" })
+            foreach (var assembly in new[] { "ApiCore" })
             {
                 var assemblies = Assembly.Load(assembly);
                 var allServices = assemblies.GetTypes().Where(t => t.GetTypeInfo().IsClass && !t.GetTypeInfo().IsAbstract && t.GetTypeInfo().Name.EndsWith("Repository")).ToList();
@@ -39,6 +41,8 @@ namespace ApiCore
                     }
                 }
             }
+
+            services.AddScoped<IUserHelper, UserHelper>();
         }
     }
 }

@@ -123,6 +123,6 @@ namespace ApiCore.Context
 
         public DbSet<Profile> Profiles { get; set; }
 
-        public DbSet<WeatherForecast> WeatherForecasts { get; set; }
+       // public DbSet<WeatherForecast> WeatherForecasts { get; set; }
     }
 }
